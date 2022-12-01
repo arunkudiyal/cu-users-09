@@ -5,6 +5,8 @@ const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 
+const mongoose = require('mongoose')
+
 // MIDLLEWARE -> This gets executed after the server starts running but before you manage your route
 // 1. nodemon -> Dev Middleware -> Is going the start the server and will detect changes on the code and restart the server
 
@@ -16,6 +18,18 @@ app.use( bodyParser.json() )
 
 // 3. morgan -> Dev Middleware -> Logger Middleware -> For all requests it will create a log in the terminal
 app.use( morgan('dev') )
+
+// 4. mongoose -> Prod Dep --> Help ypu connect to your cloud DB ( .connect(connectionString) )
+mongoose.connect('mongodb+srv://arunkudiyal:examplepwd@cluster0.2pssb.mongodb.net/cu-09-users?retryWrites=true&w=majority')
+    .then(console.log('Connection Successful!'))
+    .catch(err => console.log(err))
+
+// DO THIS ALSO --> async () => await mongoose.connect('mongodb+srv://arunkudiyal:examplepwd@cluster0.2pssb.mongodb.net/cu-09-users?retryWrites=true&w=majority')
+// try {
+//     async () => await mongoose.connect('mongodb+srv://arunkudiyal:examplepwd@cluster0.2pssb.mongodb.net/cu-09-users?retryWrites=true&w=majority')
+// } catch {
+//     console.log('Connection error')
+// }
 
 
 // MANAGING MY OWN ROUTES
