@@ -1,6 +1,8 @@
 const express = require('express')
 const router = express.Router()
 
+const Signup = require('../model/signup')
+
 // localhost:5001/users/login
 router.get('/', (req, res) => {
     res.status(200).json( {msg: 'GET request to /users/login'} )
@@ -15,10 +17,21 @@ router.get('/:variableId', (req, res) => {
 
 // Any data sent over the POST request is carried in the body
 router.post('/', (req, res) => {
-    const userId = req.body.id
+    const userEmail = req.body.email
     const userPassword = req.body.password
 
-    res.status(201).json( {message: 'POST Successful', details: `UserId: ${userId} & Password: ${userPassword}`} )
+    // Function to filter from the documents (all the documents in the DB), where the email (req.body.email) matches the document
+    // Signup.find(filter) --> Signup.find( {dbProperty: condition} )
+    Signup.find( {email: userEmail} )
+        // find() -> Data_Type(result) -> Array of Objects 
+        .then(result => {
+            if(result.length === 0) {
+                res.status(400).json( { message: 'Records Not Found!', records: result } )
+            } else {
+                res.status(200).json( { message: 'Records Found!', records: result } )
+            }
+        })
+        .catch(err => res.status(500).json( {message: 'Server Encountered an Error', error: err } ))
 })
 
 router.patch('/', (req, res) => {
