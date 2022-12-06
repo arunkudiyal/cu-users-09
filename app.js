@@ -1,5 +1,6 @@
 // Request-Response Handler File --> Express Application
 const express = require('express')
+const cors = require('cors')
 const app = express()
 
 const bodyParser = require('body-parser')
@@ -8,6 +9,9 @@ const morgan = require('morgan')
 const mongoose = require('mongoose')
 
 // MIDLLEWARE -> This gets executed after the server starts running but before you manage your route
+// 0. cors middleware -> Removes the CORS restriction
+app.use( cors() )
+
 // 1. nodemon -> Dev Middleware -> Is going the start the server and will detect changes on the code and restart the server
 
 // 2. body-parser -> You want a direct access to req.body object
