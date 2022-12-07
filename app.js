@@ -39,6 +39,8 @@ mongoose.connect('mongodb+srv://arunkudiyal:examplepwd@cluster0.2pssb.mongodb.ne
 // MANAGING MY OWN ROUTES
 // 1. /users/login
 // 2. /users/signup
+
+const homeRoute = require('./api/routes/home')
 const loginHandler = require('./api/routes/login')
 const signupHandler = require('./api/routes/signup')
 
@@ -48,9 +50,12 @@ const signupHandler = require('./api/routes/signup')
 //     res.status(200).json( {username: 'Demo UserName', password: 'Demo PWD'} )
 // })
 
+// Home Route should be defined before managing any route
+app.use('/', homeRoute)
 app.use('/users/login', loginHandler)
 app.use('/users/signup', signupHandler)
 
+// ERROR HANDLING
 // Handing req and responses from the express app
 app.use((request, response) => {
     // response.status().json(object)
