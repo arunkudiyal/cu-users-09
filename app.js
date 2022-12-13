@@ -5,12 +5,29 @@ const app = express()
 
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
+const cookieParser = require('cookie-parser')
+const session = require('express-session')
 
 const mongoose = require('mongoose')
 
 // MIDLLEWARE -> This gets executed after the server starts running but before you manage your route
 // 0. cors middleware -> Removes the CORS restriction
 app.use( cors() )
+
+// cookieParser needs to be executed like a function to access cookies from the client's browsers
+app.use( cookieParser() )
+
+// Before creating the session you need to optimise / give options to session
+app.use( session( {
+    resave: true,
+    saveUninitialized: true,
+    secret: 'secret',
+    // cookie: {
+    //     // maxAge: numbers
+    // }
+} ) )
+
+// NOW, you access a property in request parameter called - 'req.session'
 
 // 1. nodemon -> Dev Middleware -> Is going the start the server and will detect changes on the code and restart the server
 
@@ -43,6 +60,7 @@ mongoose.connect('mongodb+srv://arunkudiyal:examplepwd@cluster0.2pssb.mongodb.ne
 const homeRoute = require('./api/routes/home')
 const loginHandler = require('./api/routes/login')
 const signupHandler = require('./api/routes/signup')
+const logoutHandler = require('./api/routes/logout')
 
 // Mange my routes --> localhost:5001/users
 
@@ -54,6 +72,7 @@ const signupHandler = require('./api/routes/signup')
 app.use('/', homeRoute)
 app.use('/users/login', loginHandler)
 app.use('/users/signup', signupHandler)
+app.use('/users/logout', logoutHandler)
 
 // ERROR HANDLING
 // Handing req and responses from the express app
