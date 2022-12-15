@@ -19,11 +19,16 @@ app.use( cookieParser() )
 
 // Before creating the session you need to optimise / give options to session
 app.use( session( {
+    // Forces the session to be saved back to the session store, even if the session was never modified during the request.
     resave: true,
+    // Forces a session that is "uninitialized" to be saved to the store. A session is uninitialized when it is new but not modified.
     saveUninitialized: true,
+    // This is the secret used to sign the session cookie. This can be either a string for a single secret, or an array of multiple secrets.
+    secret: ['values', 'for', 'security', 'secret'],
     secret: 'secret',
     // cookie: {
-    //     // maxAge: numbers
+    //     // Specifies the number (in milliseconds) to use when calculating how long session will be alive.
+    //     maxAge: numbers
     // }
 } ) )
 
