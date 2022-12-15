@@ -1,4 +1,6 @@
 const express = require('express')
+const bcrypt = require('bcrypt')
+
 const { default: mongoose } = require('mongoose')
 const router = express.Router()
 
@@ -24,22 +26,25 @@ router.post('/', (req, res) => {
                 // The email already exists
                 res.status(400).json( {message: 'Email already exists, try again with a different email'} )
             } else {
-                // The email does not exist | and user will sign up
-                const newUser = new Signup({
-                    _id: new mongoose.Types.ObjectId(),
-                    email: req.body.email,
-                    password: req.body.password
-                })
-            
-                // Functionality which checks the recods of the user & check if the input email does not exist in the records
-                newUser.save()
-                    .then(result => res.status(201).json( {message: 'User Signup Successful', userDetails: result} ))
+                const saltRounds = 10
+                bcrypt.hash(req.body.password, saltRounds)
+                    .then(result => {
+                        // The email does not exist | and user will sign up
+                        const newUser = new Signup({
+                            _id: new mongoose.Types.ObjectId(),
+                            email: req.body.email,
+                            password: result
+                        })
+                    
+                        // Functionality which checks the recods of the user & check if the input email does not exist in the records
+                        newUser.save()
+                            .then(result => res.status(201).json( {message: 'User Signup Successful', userDetails: result} ))
+                            .catch(err => res.status(500).json( {message: 'Server Encountered an Error', error: err} ))
+                            })
                     .catch(err => res.status(500).json( {message: 'Server Encountered an Error', error: err} ))
             }
         })
-        .catch(err => res.status(500).json( {message: 'Server Encountered an Error', error: err} ))
-
-    
+        .catch(err => res.status(500).json( {message: 'Server Encountered an Error', error: err} ))  
 })
 
 router.patch('/', (req, res) => {

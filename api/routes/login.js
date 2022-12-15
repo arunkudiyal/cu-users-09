@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const bcrypt = require('bcrypt')
 
 const Signup = require('../model/signup')
 
@@ -28,19 +29,24 @@ router.post('/', (req, res) => {
             if(result.length === 0) {
                 res.status(400).json( { message: 'Records Not Found!', records: result } )
             } else {
-                if(userPassword === result[0].password) {
-                    const loggedInUser = {
-                        email: req.body.email,
-                        password: req.body.password
-                    }
-
-                    // Create a session for the user which is logged-in
-                    req.session.user = loggedInUser
-                    req.session.save()
-                    res.status(200).json( { message: `User Authenticated! Session started for the user with the email of ${req.session.user.email}` } )
-                } else {
-                    res.status(400).json( { message: 'User Authentication Failed!' } )
-                }
+                // Decryption
+                bcrypt.compare(req.body.password, result[0].password)
+                    .then(result => {
+                        if(result) {
+                            const loggedInUser = {
+                                email: req.body.email,
+                                password: req.body.password
+                            }
+        
+                            // Create a session for the user which is logged-in
+                            req.session.user = loggedInUser
+                            req.session.save()
+                            res.status(200).json( { message: `User Authenticated! Session started for the user with the email of ${req.session.user.email}` } )
+                        } else {
+                            res.status(400).json( { message: 'User Authentication Failed!' } )
+                        }
+                    })
+                    .catch(err => res.status(500).json( {message: 'Server Encountered an Error', error: err } ))
             }
         })
         .catch(err => res.status(500).json( {message: 'Server Encountered an Error', error: err } ))
